@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/inejka/CLionProjects/Graph/Graph.h
+vector
+-
+iostream
+-
+
+/home/inejka/CLionProjects/Graph/Hyper_graph.h
+vector
+-
+iostream
+-
+
+/home/inejka/CLionProjects/Graph/main.cpp
+Graph.h
+/home/inejka/CLionProjects/Graph/Graph.h
+Hyper_graph.h
+/home/inejka/CLionProjects/Graph/Hyper_graph.h
+algorithm
+-
+
