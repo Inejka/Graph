@@ -40,36 +40,49 @@ public:
         return arcs.end();
     }
 
-    arc_iterator arc_find(const std::vector<type> &to_find) noexcept {
-        for (arc_iterator tmp = arcs.begin(); tmp != arcs.end(); tmp++) {
-            for (int i = 0; i <= to_find.size(); i++) {
-                if (i == to_find.size())return tmp;
-                bool is_found = false;
-                for (int j = 0; j < (*tmp).size(); j++)
-                    if (to_find[i] == (*tmp)[j]) {
-                        is_found = true;
-                        break;
-                    }
-                if (!is_found)break;
-            }
-        }
-        return arcs.end();
-    }
+    class arc_find {
+        hyper_graph<type> &grph;
+    public:
+        arc_find(hyper_graph<type> &grph) : grph(grph) {}
 
-    node_iterator node_find(const type &to_search) noexcept {
-        for (auto tmp = nodes.begin(); tmp != nodes.end(); tmp++)
-            if (*tmp == to_search)return tmp;
-        return nodes.end();
-    }
+        arc_iterator operator()(const std::vector<type> &to_find) noexcept {
+            for (arc_iterator tmp = grph.arcs.begin(); tmp != grph.arcs.end(); tmp++) {
+                for (int i = 0; i <= to_find.size(); i++) {
+                    if (i == to_find.size())return tmp;
+                    bool is_found = false;
+                    for (int j = 0; j < (*tmp).size(); j++)
+                        if (to_find[i] == (*tmp)[j]) {
+                            is_found = true;
+                            break;
+                        }
+                    if (!is_found)break;
+                }
+            }
+            return grph.arcs.end();
+        }
+    };
+
+
+    class node_find {
+        hyper_graph<type> &grph;
+    public:
+        node_find(hyper_graph<type> &grph) : grph(grph) {}
+
+        node_iterator operator()(const type &to_search) noexcept {
+            for (auto tmp = grph.nodes.begin(); tmp != grph.nodes.end(); tmp++)
+                if (*tmp == to_search)return tmp;
+            return grph.nodes.end();
+        }
+    };
 
     void add_node(const type &to_add) noexcept {
-        if (node_find(to_add) != node_end())return;
+        if (node_find(*this)(to_add) != node_end())return;
         nodes.push_back(to_add);
     }
 
     void add_arc(std::vector<type> to_add) noexcept {
-        for(auto &i:to_add)
-            if(node_find(i)==node_end())return;
+        for (auto &i:to_add)
+            if (node_find(*this)(i) == node_end())return;
         arcs.push_back(std::move(to_add));
     }
 
@@ -130,7 +143,7 @@ public:
     }
 
     void node_erase(const type &to_delete) noexcept {
-        node_erase(node_find(to_delete));
+        node_erase(node_find(*this)(to_delete));
     }
 
     node_const_iterator node_cbegin() noexcept {
@@ -157,7 +170,7 @@ public:
         return nodes.crend();
     }
 
-    arc_const_iterator arc_cbegin() noexcept {
+    arc_const_iterator arc_cbegin() const noexcept {
         return arcs.cbegin();
     }
 

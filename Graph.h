@@ -13,6 +13,8 @@ class graph {
 protected:
     std::vector<type> nodes;
     std::vector<std::pair<type &, type &>> arcs; //G={V,E}
+    friend class node_find;
+
 public:
     typedef typename std::vector<std::pair<type &, type &>>::iterator arc_iterator;
     typedef typename std::vector<type>::iterator node_iterator;
@@ -40,26 +42,40 @@ public:
         return arcs.end();
     }
 
-    arc_iterator arc_find(const type &from, const type &to) noexcept {
-        for (auto tmp = arcs.begin(); tmp != arcs.end(); tmp++)
-            if ((*tmp).first == from && (*tmp).second == to)return tmp;
-        return arcs.end();
-    }
+    class arc_find {
+        graph<type> &grph;
+    public:
+        arc_find(graph<type> &grph) : grph(grph) {}
 
-    node_iterator node_find(const type &to_search) noexcept {
-        for (auto tmp = nodes.begin(); tmp != nodes.end(); tmp++)
-            if (*tmp == to_search)return tmp;
-        return nodes.end();
-    }
+        arc_iterator operator()(const type &from, const type &to) noexcept {
+            for (auto tmp = grph.arcs.begin(); tmp != grph.arcs.end(); tmp++)
+                if ((*tmp).first == from && (*tmp).second == to)return tmp;
+            return grph.arcs.end();
+        }
+    };
+
+
+    class node_find {
+        graph<type> &grph;
+    public:
+        node_find(graph<type> &grph) : grph(grph) {}
+
+        node_iterator operator()(const type &to_search) noexcept {
+            for (auto tmp = grph.nodes.begin(); tmp != grph.nodes.end(); tmp++)
+                if (*tmp == to_search)return tmp;
+            return grph.nodes.end();
+        }
+    };
+
 
     void add_node(const type &to_add) noexcept {
-        if (node_find(to_add) != node_end())return;
+        if (node_find(*this)(to_add) != node_end())return;
         nodes.push_back(to_add);
     }
 
     void add_arc(const type &from, const type &to) noexcept {
-        auto from_it = node_find(from), to_it = node_find(to), end_it = nodes.end();
-        if (from_it == end_it || to_it == end_it || arc_find(from, to) != arcs.end()) return;
+        auto from_it = node_find(*this)(from), to_it = node_find(*this)(to), end_it = nodes.end();
+        if (from_it == end_it || to_it == end_it || arc_find(*this)(from, to) != arcs.end()) return;
         arcs.push_back({*from_it, *to_it});
     }
 
@@ -118,7 +134,7 @@ public:
     }
 
     void node_erase(const type &to_delete) noexcept {
-        node_erase(node_find(to_delete));
+        node_erase(node_find(*this)(to_delete));
     }
 
     node_const_iterator node_cbegin() noexcept {
@@ -145,7 +161,7 @@ public:
         return nodes.crend();
     }
 
-    arc_const_iterator arc_cbegin() noexcept {
+    arc_const_iterator arc_cbegin()const noexcept {
         return arcs.cbegin();
     }
 
