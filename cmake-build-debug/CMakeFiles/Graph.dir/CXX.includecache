@@ -7,7 +7,7 @@
 #IncludeRegexTransform: 
 
 /home/inejka/CLionProjects/Graph/Graph.h
-vector
+list
 -
 iostream
 -

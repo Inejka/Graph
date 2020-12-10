@@ -55,13 +55,20 @@ void graph_test() {
     std::cout << endl;
     for_each(a.arc_begin(), a.arc_end(),
              [](const pair<string, string> &a) { cout << a.first << "->" << a.second << endl; });;
-    a.arc_erase(graph<string>::arc_find(a)("3", "2"));
+    a.arc_erase(graph<string>::arc_find(a)("4", "1"));
+    a.node_erase("2");
     std::cout << "After deleting:\n";
     for_each(a.node_begin(), a.node_end(), [](const string &a) { cout << a << ' '; });
     std::cout << endl;
     for_each(a.arc_begin(), a.arc_end(),
              [](const pair<string, string> &a) { cout << a.first << "->" << a.second << endl; });
-    //Как оказалось при ипользовании ссылок всё идёт не так как задумывалось,прошу сделать подсказу,где я допустил ошибку,т.к. сохранить привязку рёбер к узлам хочется.
+    a.add_arc("4","1");
+    (*a.node_begin())="9";
+    std::cout << "After adding arc 4->1 and changing value of first node to 9\n";
+    for_each(a.node_begin(), a.node_end(), [](const string &a) { cout << a << ' '; });
+    std::cout << endl;
+    for_each(a.arc_begin(), a.arc_end(),
+             [](const pair<string, string> &a) { cout << a.first << "->" << a.second << endl; });
 }
 
 void hyper_graph_test() {
@@ -87,7 +94,6 @@ void hyper_graph_test() {
     for_each(a.node_begin(), a.node_end(), [](string a) { cout << a << ' '; });
     std::cout << endl;
     for_each(a.arc_begin(), a.arc_end(), [](vector<string> nodes) { print_hyper_graph_edge(nodes); });
-    //Тут ничего не ломается,но и дуги никак не связаны с вершинами :C
-};
+}
 
 

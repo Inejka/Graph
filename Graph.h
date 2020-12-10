@@ -5,26 +5,26 @@
 #ifndef GRAPH_GRAPH_H
 #define GRAPH_GRAPH_H
 
-#include <vector>
+#include <list>
 #include <iostream>
 
 template<class type>
 class graph {
 protected:
-    std::vector<type> nodes;
-    std::vector<std::pair<type &, type &>> arcs; //G={V,E}
+    std::list<type> nodes;
+    std::list<std::pair<type &, type &>> arcs; //G={V,E}
     friend class node_find;
 
 public:
-    typedef typename std::vector<std::pair<type &, type &>>::iterator arc_iterator;
-    typedef typename std::vector<type>::iterator node_iterator;
-    typedef typename std::vector<type>::const_iterator node_const_iterator;
-    typedef typename std::vector<type>::reverse_iterator node_reverse_iterator;
-    typedef typename std::vector<type>::const_reverse_iterator node_const_reverse_iterator;
+    typedef typename std::list<std::pair<type &, type &>>::iterator arc_iterator;
+    typedef typename std::list<type>::iterator node_iterator;
+    typedef typename std::list<type>::const_iterator node_const_iterator;
+    typedef typename std::list<type>::reverse_iterator node_reverse_iterator;
+    typedef typename std::list<type>::const_reverse_iterator node_const_reverse_iterator;
 
-    typedef typename std::vector<std::pair<type &, type &>>::const_iterator arc_const_iterator;
-    typedef typename std::vector<std::pair<type &, type &>>::reverse_iterator arc_reverse_iterator;
-    typedef typename std::vector<std::pair<type &, type &>>::const_reverse_iterator arc_const_reverse_iterator;
+    typedef typename std::list<std::pair<type &, type &>>::const_iterator arc_const_iterator;
+    typedef typename std::list<std::pair<type &, type &>>::reverse_iterator arc_reverse_iterator;
+    typedef typename std::list<std::pair<type &, type &>>::const_reverse_iterator arc_const_reverse_iterator;
 
     node_iterator node_begin() noexcept {
         return nodes.begin();
@@ -115,9 +115,18 @@ public:
     void arc_erase(const type &to_delete) noexcept {
         for (auto i = arcs.begin(); i != arcs.end(); i++)
             if ((*i).first == to_delete || (*i).second == to_delete) {
-                arcs.erase(i);
-                i--;
+                if (i == arcs.begin()) {
+                    arcs.erase(i);
+                    i = arcs.begin();
+                } else {
+                    auto tmp = i;
+                    tmp--;
+                    arcs.erase(i);
+                    i = tmp;
+                }
             }
+        if ((*arcs.begin()).first == to_delete || (*arcs.begin()).second == to_delete)
+        arcs.erase(arcs.begin());
     }
 
     void node_erase(node_iterator to_delete) noexcept {
@@ -161,7 +170,7 @@ public:
         return nodes.crend();
     }
 
-    arc_const_iterator arc_cbegin()const noexcept {
+    arc_const_iterator arc_cbegin() const noexcept {
         return arcs.cbegin();
     }
 
